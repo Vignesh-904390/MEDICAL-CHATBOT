@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gale Bot - AI Medical Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #4cc9f0;
+            --success: #4ade80;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gradient: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: var(--gradient);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 2rem;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            font-size: 2.5rem;
+            background: white;
+            color: var(--primary);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo h1 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .logo p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 992px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-title {
+            color: var(--secondary);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-title i {
+            color: var(--accent);
+        }
+        
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .voice-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            font-size: 1rem;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .avatar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .avatar {
+            width: 180px;
+            height: 180px;
+            background: linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(76, 201, 240, 0.4);
+            overflow: hidden;
+        }
+        
+        .avatar i {
+            font-size: 5rem;
+            color: white;
+        }
+        
+        .avatar-pulse {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: rgba(76, 201, 240, 0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        .avatar-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 300px;
+        }
+        
+        select {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .response-section {
+            grid-column: 1 / -1;
+        }
+        
+        .response-container {
+            background: #f8f9ff;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            min-height: 200px;
+            border-left: 5px solid var(--primary);
+        }
+        
+        .response-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .response-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .response-text {
+            line-height: 1.6;
+            color: #333;
+            font-size: 1.05rem;
+        }
+        
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .voice-status {
+            background: #f0f7ff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .voice-status.active {
+            display: flex;
+        }
+        
+        .voice-visualizer {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            height: 30px;
+        }
+        
+        .voice-bar {
+            width: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+            animation: voiceWave 1.5s infinite ease-in-out;
+        }
+        
+        .voice-bar:nth-child(1) { animation-delay: 0.1s; }
+        .voice-bar:nth-child(2) { animation-delay: 0.2s; }
+        .voice-bar:nth-child(3) { animation-delay: 0.3s; }
+        .voice-bar:nth-child(4) { animation-delay: 0.4s; }
+        .voice-bar:nth-child(5) { animation-delay: 0.5s; }
+        
+        @keyframes voiceWave {
+            0%, 100% { height: 5px; }
+            50% { height: 25px; }
+        }
+        
+        .language-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .language-selector label {
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        .audio-player {
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        audio {
+            width: 100%;
+            border-radius: 10px;
+        }
+        
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 15px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .status-indicator::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #2e7d32;
+            border-radius: 50%;
+        }
+        
+        .typing-animation {
+            display: inline-block;
+        }
+        
+        .typing-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            margin: 0 2px;
+            opacity: 0.6;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            border-left: 4px solid var(--success);
+        }
+        
+        .notification.error {
+            border-left: 4px solid var(--danger);
+        }
+        
+        .notification.warning {
+            border-left: 4px solid var(--warning);
+        }
+        
+        .translation-badge {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-radius: 8px;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .language-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .language-tab {
+            padding: 8px 16px;
+            background: #f0f0f0;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .language-tab.active {
+            background: var(--gradient);
+            color: white;
+        }
+        
+        .language-tab:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <div>
+                        <h1>Gale Bot</h1>
+                        <p>AI-Powered Medical Assistant with Voice Support</p>
+                    </div>
+                </div>
+                <div class="status-indicator">
+                    <i class="fas fa-circle"></i>
+                    System Active
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="main-container">
+            <!-- Input Section -->
+            <div class="card">
+                <h2 class="card-title">
+                    <i class="fas fa-comment-medical"></i>
+                    Ask Your Medical Question
+                </h2>
+                <div class="input-section">
+                    <div class="voice-controls">
+                        <button class="btn btn-primary" id="voiceBtn">
+                            <i class="fas fa-microphone"></i>
+                            Voice Input
+                        </button>
+                        <button class="btn btn-outline btn-sm" id="stopVoiceBtn" disabled>
+                            <i class="fas fa-stop"></i>
+                            Stop
+                        </button>
+                    </div>
+                    
+                    <div class="voice-status" id="voiceStatus">
+                        <div class="voice-visualizer">
+                            <div class="voice-bar"></div>
+                            <div class="voice-bar"></div>
+                            <div class="voice-bar"></div>
+                            <div class="voice-bar"></div>
+                            <div class="voice-bar"></div>
+                        </div>
+                        <span>Listening... Speak now</span>
+                    </div>
+                    
+                    <textarea id="questionInput" placeholder="Type your medical question here or use voice input..."></textarea>
+                    
+                    <button class="btn btn-primary" id="askBtn">
+                        <i class="fas fa-paper-plane"></i>
+                        Ask Gale Bot
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Avatar & Language Section -->
+            <div class="card">
+                <h2 class="card-title">
+                    <i class="fas fa-robot"></i>
+                    Speaking Avatar
+                </h2>
+                <div class="avatar-container">
+                    <div class="avatar" id="avatar">
+                        <div class="avatar-pulse"></div>
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    
+                    <div class="avatar-controls">
+                        <div class="language-selector">
+                            <label for="languageSelect"><i class="fas fa-language"></i> Select Language:</label>
+                        </div>
+                        <select id="languageSelect">
+                            <option value="en">English</option>
+                            <option value="es">Spanish</option>
+                            <option value="fr">French</option>
+                            <option value="de">German</option>
+                            <option value="hi">Hindi</option>
+                            <option value="zh">Chinese</option>
+                            <option value="ja">Japanese</option>
+                            <option value="ko">Korean</option>
+                            <option value="ar">Arabic</option>
+                            <option value="ru">Russian</option>
+                        </select>
+                        
+                        <button class="btn btn-success" id="translateBtn">
+                            <i class="fas fa-exchange-alt"></i>
+                            Translate Response
+                        </button>
+                        
+                        <button class="btn btn-warning" id="speakBtn">
+                            <i class="fas fa-volume-up"></i>
+                            Speak Response
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Response Section -->
+            <div class="card response-section">
+                <h2 class="card-title">
+                    <i class="fas fa-stethoscope"></i>
+                    Medical Response
+                </h2>
+                
+                <div class="response-header">
+                    <h3>Gale Bot's Answer</h3>
+                    <div class="response-controls">
+                        <button class="btn btn-outline btn-sm" id="copyBtn">
+                            <i class="fas fa-copy"></i>
+                            Copy
+                        </button>
+                        <button class="btn btn-outline btn-sm" id="clearBtn">
+                            <i class="fas fa-trash"></i>
+                            Clear
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="language-tabs" id="languageTabs" style="display: none;">
+                    <div class="language-tab active" data-lang="original">Original (English)</div>
+                </div>
+                
+                <div class="response-container" id="responseContainer">
+                    <div class="response-text" id="responseText">
+                        Your response will appear here...
+                    </div>
+                    
+                    <div class="audio-player" id="audioPlayer" style="display: none;">
+                        <h4><i class="fas fa-headphones"></i> Audio Response</h4>
+                        <audio id="audioElement" controls></audio>
+                    </div>
+                </div>
+                
+                <div class="loader" id="loader">
+                    <div class="spinner"></div>
+                    <p>Gale Bot is analyzing your question<span class="typing-animation">
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                    </span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>© 2024 Gale Bot - AI Medical Assistant. This tool provides informational support only and is not a substitute for professional medical advice.</p>
+            <p>Always consult with a healthcare provider for medical concerns.</p>
+        </div>
+    </footer>
+    
+    <!-- Notification Container -->
+    <div id="notificationContainer"></div>
+    
+    <script>
+        // DOM Elements
+        const questionInput = document.getElementById('questionInput');
+        const askBtn = document.getElementById('askBtn');
+        const voiceBtn = document.getElementById('voiceBtn');
+        const stopVoiceBtn = document.getElementById('stopVoiceBtn');
+        const voiceStatus = document.getElementById('voiceStatus');
+        const responseText = document.getElementById('responseText');
+        const responseContainer = document.getElementById('responseContainer');
+        const loader = document.getElementById('loader');
+        const languageSelect = document.getElementById('languageSelect');
+        const translateBtn = document.getElementById('translateBtn');
+        const speakBtn = document.getElementById('speakBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const audioElement = document.getElementById('audioElement');
+        const avatar = document.getElementById('avatar');
+        const languageTabs = document.getElementById('languageTabs');
+        
+        // Variables
+        let recognition = null;
+        let isListening = false;
+        let currentResponse = '';
+        let translatedResponse = '';
+        let currentLanguage = 'en';
+        let translations = {}; // Store all translations
+        let activeTab = 'original';
+        
+        // Initialize Speech Recognition
+        function initSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+                
+                recognition.onstart = function() {
+                    isListening = true;
+                    voiceStatus.classList.add('active');
+                    voiceBtn.disabled = true;
+                    stopVoiceBtn.disabled = false;
+                    showNotification('Listening... Speak now', 'success');
+                };
+                
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    questionInput.value = transcript;
+                    showNotification('Voice input captured', 'success');
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    showNotification('Voice recognition error: ' + event.error, 'error');
+                    stopListening();
+                };
+                
+                recognition.onend = function() {
+                    stopListening();
+                };
+            } else {
+                showNotification('Speech recognition is not supported in your browser', 'warning');
+                voiceBtn.disabled = true;
+            }
+        }
+        
+        // Stop listening function
+        function stopListening() {
+            if (recognition) {
+                recognition.stop();
+            }
+            isListening = false;
+            voiceStatus.classList.remove('active');
+            voiceBtn.disabled = false;
+            stopVoiceBtn.disabled = true;
+        }
+        
+        // Show notification
+        function showNotification(message, type = 'success') {
+            const container = document.getElementById('notificationContainer');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            
+            const icon = type === 'success' ? 'fa-check-circle' : 
+                        type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+            
+            notification.innerHTML = `
+                <i class="fas ${icon}"></i>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    container.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+        
+        // Ask Gale Bot
+        async function askGaleBot() {
+            const question = questionInput.value.trim();
+            
+            if (!question) {
+                showNotification('Please enter a question', 'warning');
+                return;
+            }
+            
+            // Show loader
+            loader.style.display = 'block';
+            responseContainer.style.opacity = '0.5';
+            
+            try {
+                const response = await fetch('/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ question: question })
+                });
+                
+                const data = await response.json();
+                
+                // Hide loader
+                loader.style.display = 'none';
+                responseContainer.style.opacity = '1';
+                
+                if (data.answer) {
+                    currentResponse = data.answer;
+                    translations = { original: data.answer };
+                    responseText.innerHTML = `
+                        <div class="translation-badge">
+                            <strong><i class="fas fa-language"></i> Original Response (English)</strong>
+                        </div>
+                        <strong>Question:</strong> ${escapeHtml(question)}<br><br>
+                        <strong>Answer:</strong><br>${formatResponse(data.answer)}
+                    `;
+                    showNotification('Response received successfully', 'success');
+                    
+                    // Reset language tabs
+                    resetLanguageTabs();
+                    
+                    // Animate avatar
+                    animateAvatar();
+                } else {
+                    throw new Error('No answer received');
+                }
+            } catch (error) {
+                loader.style.display = 'none';
+                responseContainer.style.opacity = '1';
+                responseText.textContent = `Error: ${error.message}`;
+                showNotification(`Error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Reset language tabs
+        function resetLanguageTabs() {
+            languageTabs.innerHTML = '<div class="language-tab active" data-lang="original">Original (English)</div>';
+            languageTabs.style.display = 'flex';
+            activeTab = 'original';
+        }
+        
+        // Add language tab
+        function addLanguageTab(langCode, langName) {
+            // Check if tab already exists
+            const existingTab = languageTabs.querySelector(`[data-lang="${langCode}"]`);
+            if (existingTab) {
+                // Activate existing tab
+                setActiveTab(langCode);
+                return;
+            }
+            
+            const tab = document.createElement('div');
+            tab.className = 'language-tab';
+            tab.dataset.lang = langCode;
+            tab.textContent = `${langName}`;
+            
+            tab.addEventListener('click', () => {
+                setActiveTab(langCode);
+            });
+            
+            languageTabs.appendChild(tab);
+            setActiveTab(langCode);
+        }
+        
+        // Set active tab
+        function setActiveTab(langCode) {
+            // Update all tabs
+            document.querySelectorAll('.language-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Activate selected tab
+            const activeTabElement = languageTabs.querySelector(`[data-lang="${langCode}"]`);
+            if (activeTabElement) {
+                activeTabElement.classList.add('active');
+                activeTab = langCode;
+                
+                // Update display based on active tab
+                updateResponseDisplay();
+            }
+        }
+        
+        // Update response display based on active tab
+        function updateResponseDisplay() {
+            if (activeTab === 'original') {
+                const question = questionInput.value.trim();
+                responseText.innerHTML = `
+                    <div class="translation-badge">
+                        <strong><i class="fas fa-language"></i> Original Response (English)</strong>
+                    </div>
+                    <strong>Question:</strong> ${escapeHtml(question)}<br><br>
+                    <strong>Answer:</strong><br>${formatResponse(translations.original)}
+                `;
+            } else {
+                const langName = getLanguageName(activeTab);
+                responseText.innerHTML = `
+                    <div class="translation-badge">
+                        <strong><i class="fas fa-language"></i> Translated to ${langName}</strong>
+                    </div>
+                    <strong>Original Question:</strong> ${escapeHtml(questionInput.value.trim())}<br><br>
+                    <strong>Translated Answer (${langName}):</strong><br>${formatResponse(translations[activeTab])}
+                `;
+            }
+        }
+        
+        // Get language name from code
+        function getLanguageName(code) {
+            const langMap = {
+                'en': 'English',
+                'es': 'Spanish',
+                'fr': 'French',
+                'de': 'German',
+                'hi': 'Hindi',
+                'zh': 'Chinese',
+                'ja': 'Japanese',
+                'ko': 'Korean',
+                'ar': 'Arabic',
+                'ru': 'Russian'
+            };
+            return langMap[code] || code;
+        }
+        
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Format response with better styling
+        function formatResponse(text) {
+            if (!text) return '';
+            // Add line breaks and basic formatting
+            return text
+                .replace(/\n/g, '<br>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>');
+        }
+        
+        // Translate response - UPDATED FUNCTION
+        async function translateResponse() {
+            if (!currentResponse) {
+                showNotification('No response to translate', 'warning');
+                return;
+            }
+
+            const lang = languageSelect.value;
+            
+            try {
+                translateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Translating...';
+                translateBtn.disabled = true;
+                
+                const response = await fetch('/translate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        text: currentResponse,
+                        lang: lang 
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.translated) {
+                    translatedResponse = data.translated;
+                    translations[lang] = data.translated;
+                    
+                    const langName = data.language_name || getLanguageName(lang);
+                    
+                    // Add language tab
+                    addLanguageTab(lang, langName);
+                    
+                    showNotification(`Translated to ${langName} successfully`, 'success');
+                    
+                    // Animate avatar
+                    animateAvatar();
+                } else {
+                    throw new Error(data.error || 'Translation failed');
+                }
+            } catch (error) {
+                showNotification(`Translation error: ${error.message}`, 'error');
+                console.error('Translation error:', error);
+            } finally {
+                translateBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> Translate Response';
+                translateBtn.disabled = false;
+            }
+        }
+        
+        // Speak response - UPDATED FUNCTION
+        async function speakResponse() {
+            if (!currentResponse) {
+                showNotification('No response to speak', 'warning');
+                return;
+            }
+            
+            const lang = languageSelect.value;
+            const langName = getLanguageName(lang);
+            
+            try {
+                // Show loading state
+                speakBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating Audio...';
+                speakBtn.disabled = true;
+                
+                let textToSpeak = currentResponse;
+                
+                // If we have a translated version and language is not English, use that
+                if (lang !== 'en' && translations[lang]) {
+                    textToSpeak = translations[lang];
+                } else if (lang !== 'en') {
+                    // Translate first, then speak
+                    const translateResponse = await fetch('/translate-and-speak', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ 
+                            text: currentResponse,
+                            lang: lang 
+                        })
+                    });
+                    
+                    const data = await translateResponse.json();
+                    
+                    if (data.audio) {
+                        // Play audio
+                        playAudio(data.audio);
+                        speakBtn.innerHTML = '<i class="fas fa-volume-up"></i> Speak Response';
+                        speakBtn.disabled = false;
+                        
+                        // Store translation if we got one
+                        if (data.translated) {
+                            translations[lang] = data.translated;
+                            addLanguageTab(lang, data.lang_name || langName);
+                        }
+                        return;
+                    } else {
+                        throw new Error('Audio generation failed');
+                    }
+                }
+                
+                // For English or if translation not needed
+                const response = await fetch('/text-to-speech', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        text: textToSpeak,
+                        lang: lang
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.audio) {
+                    playAudio(data.audio);
+                } else {
+                    throw new Error('Audio generation failed');
+                }
+                
+            } catch (error) {
+                showNotification(`Speech error: ${error.message}`, 'error');
+                console.error('Speech error:', error);
+            } finally {
+                speakBtn.innerHTML = '<i class="fas fa-volume-up"></i> Speak Response';
+                speakBtn.disabled = false;
+            }
+        }
+        
+        // Play audio from base64
+        function playAudio(base64Audio) {
+            audioPlayer.style.display = 'block';
+            audioElement.src = `data:audio/mpeg;base64,${base64Audio}`;
+            audioElement.play();
+            showNotification('Playing audio response', 'success');
+            
+            // Animate avatar while speaking
+            animateAvatarSpeaking();
+            
+            // Reset avatar when audio ends
+            audioElement.onended = function() {
+                resetAvatar();
+            };
+        }
+        
+        // Animate avatar
+        function animateAvatar() {
+            avatar.style.transform = 'scale(1.1)';
+            avatar.style.transition = 'transform 0.3s ease';
+            
+            setTimeout(() => {
+                avatar.style.transform = 'scale(1)';
+            }, 300);
+        }
+        
+        // Animate avatar while speaking
+        function animateAvatarSpeaking() {
+            avatar.style.animation = 'pulse 1s infinite';
+        }
+        
+        // Reset avatar animation
+        function resetAvatar() {
+            avatar.style.animation = '';
+        }
+        
+        // Copy response to clipboard
+        function copyToClipboard() {
+            let textToCopy = '';
+            
+            if (activeTab === 'original') {
+                textToCopy = currentResponse || responseText.textContent;
+            } else {
+                textToCopy = translations[activeTab] || responseText.textContent;
+            }
+            
+            if (!textToCopy || textToCopy === 'Your response will appear here...') {
+                showNotification('Nothing to copy', 'warning');
+                return;
+            }
+            
+            // Remove HTML tags for plain text copy
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = textToCopy;
+            const plainText = tempDiv.textContent || tempDiv.innerText || '';
+            
+            navigator.clipboard.writeText(plainText)
+                .then(() => {
+                    showNotification('Copied to clipboard', 'success');
+                })
+                .catch(err => {
+                    console.error('Copy failed:', err);
+                    showNotification('Failed to copy', 'error');
+                });
+        }
+        
+        // Clear all
+        function clearAll() {
+            questionInput.value = '';
+            responseText.textContent = 'Your response will appear here...';
+            currentResponse = '';
+            translatedResponse = '';
+            translations = {};
+            audioPlayer.style.display = 'none';
+            audioElement.src = '';
+            languageTabs.style.display = 'none';
+            languageTabs.innerHTML = '<div class="language-tab active" data-lang="original">Original (English)</div>';
+            showNotification('Cleared all content', 'success');
+        }
+        
+        // Event Listeners
+        voiceBtn.addEventListener('click', () => {
+            if (!isListening && recognition) {
+                recognition.start();
+            }
+        });
+        
+        stopVoiceBtn.addEventListener('click', stopListening);
+        
+        askBtn.addEventListener('click', askGaleBot);
+        
+        translateBtn.addEventListener('click', translateResponse);
+        
+        speakBtn.addEventListener('click', speakResponse);
+        
+        copyBtn.addEventListener('click', copyToClipboard);
+        
+        clearBtn.addEventListener('click', clearAll);
+        
+        // Enter key to submit question
+        questionInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                askGaleBot();
+            }
+        });
+        
+        // Load available languages on startup
+        async function loadSupportedLanguages() {
+            try {
+                const response = await fetch('/get-languages');
+                const data = await response.json();
+                
+                if (data.languages && data.languages.length > 0) {
+                    // Update language select dropdown
+                    languageSelect.innerHTML = '';
+                    data.languages.forEach(lang => {
+                        const option = document.createElement('option');
+                        option.value = lang.code;
+                        option.textContent = lang.name;
+                        languageSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to load languages:', error);
+            }
+        }
+        
+        // Initialize on load
+        window.addEventListener('load', () => {
+            initSpeechRecognition();
+            loadSupportedLanguages();
+            showNotification('Gale Bot is ready. Ask your medical question!', 'success');
+        });
+    </script>
+</body>
+</html>
