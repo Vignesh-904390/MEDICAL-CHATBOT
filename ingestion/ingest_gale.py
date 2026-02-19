@@ -69,4 +69,5 @@ PineconeVectorStore.from_documents(
 )
 
 
+
 print("🎉 Gale Encyclopedia ingested successfully (LOCAL embeddings)")
