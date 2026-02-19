@@ -5,7 +5,8 @@ pinecone-client
 pypdf
 tiktoken
 sentence-transformers
-SpeechRecognition
 pyttsx3
-pyaudio
 gunicorn
+gtts
+SpeechRecognition
+
